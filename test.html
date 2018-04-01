@@ -38,7 +38,7 @@
     <input id="origin" type="text">
     <b>End: </b>
     <input id="destination" type="text">
-    <button type="button" onclick="crawl()">Crawl</button>
+    <button id="myButton" type="button" onclick="crawl()">Crawl</button>
 </div>
 <div id="map"></div>
 <script>
@@ -46,6 +46,7 @@
     var origin;
     var dest;
     var service;
+	var renderer;
 
     function initMap() {
         /*infoWindow = new google.maps.InfoWindow;
@@ -69,13 +70,14 @@
             // Browser doesn't support Geolocation
             handleLocationError(false, infoWindow, map.getCenter());
         }*/
-
+		
         var fleet = {lat: 51.290743, lng: -0.831480};
         map = new google.maps.Map(document.getElementById('map'), {
             center: fleet,
             zoom: 15
         });
         service = new google.maps.places.PlacesService(map);
+		renderer = new google.maps.DirectionsRenderer();
     }
 
     function handleLocationError(browserHasGeolocation, infoWindow, pos) {
@@ -125,6 +127,8 @@
     }
 
     function process() {
+		renderer.setMap(null);
+		renderer.setDirections({routes: []});
         var bounds = new google.maps.LatLngBounds();
         bounds.extend(origin.location);
         bounds.extend(dest.location);
@@ -158,16 +162,15 @@
                 }, function (response, status) {
                     if (status == 'OK') {
                         // Display the route on the map.
-                        new google.maps.DirectionsRenderer({
-                            map: map
-                        }).setDirections(response);
+                        renderer.setMap(map);
+						renderer.setDirections(response);
                     }
                 });
             }
         });
     }
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key=<mykey&callback=initMap&libraries=places,geometry"
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDT4vKn28vGSKeBifWh71LMRIb4QncRgqk&callback=initMap&libraries=places,geometry"
         async defer></script>
 </body>
 </html>
